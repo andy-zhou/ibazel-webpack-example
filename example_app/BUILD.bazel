@@ -1,0 +1,47 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_project")
+load("@npm//webpack-dev-server:index.bzl", "webpack_dev_server")
+
+ts_project(
+    name = "compile",
+    tsconfig = "tsconfig.json",
+    deps = [
+        "@npm//@types",
+        "@npm//csstype"
+    ],
+    srcs = [
+        "index.tsx",
+    ]
+)
+
+webpack_dev_server(
+    name = "dev_server",
+    templated_args = [
+        "--config",
+        "$(execpath webpack.config.js)",
+        "--hot"
+    ],
+    data = [
+        ":compile",
+        "index.html",
+        "webpack.config.js",
+        "@npm//:node_modules",
+    ],
+    tags = [
+        "ibazel_notify_changes",
+    ]
+)
+
+webpack_dev_server(
+    name = "dev_server_reload",
+    templated_args = [
+        "--config",
+        "$(execpath webpack.config.js)",
+        "--hot"
+    ],
+    data = [
+        ":compile",
+        "index.html",
+        "webpack.config.js",
+        "@npm//:node_modules",
+    ],
+)
